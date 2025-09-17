@@ -2,7 +2,7 @@
 <div class="row">
   <div class="col-8 offset-2">
     <h3><%= listing.title %></h3>
-    <div class="card show-card">
+    <div class="card show-card listing-card">
       <img
         src="<%= listing.image?.url || '/images/default.jpg' %>"
         class="card-img-top show-img"
@@ -29,7 +29,12 @@
   <div class="col-8 offset-2 mb-3">
     <hr />
     <h4>Leave a Review</h4>
-    <form action="/listings/<%= listing.id %>/reviews" method="POST">
+    <form
+      action="/listings/<%= listing.id %>/reviews"
+      method="POST"
+      novalidate
+      class="needs-validation"
+    >
       <div class="mb-3 mt-3">
         <label for="rating" class="form-lable">Rating</label>
         <input
@@ -49,9 +54,25 @@
           cols="30"
           rows="5"
           class="form-control"
+          required
         ></textarea>
+        <div class="invalid-feedback">please Add some comments for review</div>
       </div>
       <button class="btn btn-outline-dark">Submit</button>
     </form>
+
+    <hr />
+    <p><b>All Review</b></p>
+    <div class="row">
+      <% for(review of listing.reviews) { %>
+      <div class="card col-5 ms-3 mb-3" style="width: 18rem">
+        <div class="card-body">
+          <h5 class="card-title">user name</h5>
+          <p class="card-text"><%= review.comment %></p>
+          <p class="card-text"><%= review.rating %> Stars</p>
+        </div>
+      </div>
+      <% } %>
+    </div>
   </div>
 </div>

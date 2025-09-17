@@ -7,7 +7,7 @@ const ejsMate = require("ejs-mate");
 const app = express();
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/expressError.js");
-const { listingSchema } = require("./schema.js");
+const { listingSchema, reviewSchema } = require("./schema.js");
 const Review = require("./models/review.js");
 
 // MongoDB connection
@@ -32,6 +32,15 @@ app.get("/", (req, res) => res.send("I am root"));
 //schema validation middleware
 const validatelisting = (req, res, next) => {
   const { error } = listingSchema.validate(req.body);
+  if (error) {
+    const errmsg = error.details.map((el) => el.message).join(",");
+    throw new ExpressError(400, errmsg);
+  }
+  next();
+};
+
+const validateReview = (req, res, next) => {
+  const { error } = reviewSchema.validate(req.body);
   if (error) {
     const errmsg = error.details.map((el) => el.message).join(",");
     throw new ExpressError(400, errmsg);
@@ -69,7 +78,7 @@ app.get(
   "/listings/:id",
   wrapAsync(async (req, res) => {
     const { id } = req.params;
-    const listing = await Listing.findById(id);
+    const listing = await Listing.findById(id).populate("reviews");
     if (!listing) return res.send("Listing not found");
     res.render("listings/show", { listing });
   })
@@ -116,17 +125,21 @@ app.delete(
 
 //Review
 //Post Route
-app.post("/listings/:id/reviews", async (req, res) => {
-  let listing = await Listing.findById(req.params.id);
-  let newReview = new Review(req.body.review);
+app.post(
+  "/listings/:id/reviews",
+  validateReview,
+  wrapAsync(async (req, res) => {
+    let listing = await Listing.findById(req.params.id);
+    let newReview = new Review(req.body.review);
 
-  listing.reviews.push(newReview);
+    listing.reviews.push(newReview);
 
-  await newReview.save();
-  await listing.save();
+    await newReview.save();
+    await listing.save();
 
-  res.redirect(`/listings/${listing._id}`);
-});
+    res.redirect(`/listings/${listing._id}`);
+  })
+);
 
 // All route handlers here...
 

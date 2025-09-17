@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const Listing = require("./models/listing");
+const Listing = require("./models/listing.js");
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
@@ -8,6 +8,7 @@ const app = express();
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/expressError.js");
 const { listingSchema } = require("./schema.js");
+const Review = require("./models/review.js");
 
 // MongoDB connection
 const mongoUrl = "mongodb://127.0.0.1:27017/wonderlust";
@@ -112,6 +113,20 @@ app.delete(
     res.redirect("/listings");
   })
 );
+
+//Review
+//Post Route
+app.post("/listings/:id/reviews", async (req, res) => {
+  let listing = await Listing.findById(req.params.id);
+  let newReview = new Review(req.body.review);
+
+  listing.reviews.push(newReview);
+
+  await newReview.save();
+  await listing.save();
+
+  res.redirect(`/listings/${listing._id}`);
+});
 
 // All route handlers here...
 

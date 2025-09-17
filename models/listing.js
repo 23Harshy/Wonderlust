@@ -35,7 +35,7 @@ const listingSchema = new Schema({
     type: String,
     trim: true,
   },
-  review: [
+  reviews: [
     {
       type: Schema.Types.ObjectId,
 

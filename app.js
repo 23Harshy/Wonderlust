@@ -9,6 +9,7 @@ const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/expressError.js");
 const { listingSchema, reviewSchema } = require("./schema.js");
 const Review = require("./models/review.js");
+const { wrap } = require("module");
 
 // MongoDB connection
 const mongoUrl = "mongodb://127.0.0.1:27017/wonderlust";
@@ -124,7 +125,7 @@ app.delete(
 );
 
 //Review
-//Post Route
+//Post review Route
 app.post(
   "/listings/:id/reviews",
   validateReview,
@@ -138,6 +139,19 @@ app.post(
     await listing.save();
 
     res.redirect(`/listings/${listing._id}`);
+  })
+);
+
+//delete review route
+
+app.delete(
+  "/listings/:id/reviews/:reviewId",
+  wrapAsync(async (req, res) => {
+    let { id, reviewId } = req.params;
+    await Listing.findByIdAndUpdate(id, { $pull: { review: reviewId } });
+    await Review.findByIdAndDelete(reviewId);
+
+    res.redirect(`/listings/${id}`);
   })
 );
 

@@ -29,6 +29,7 @@ body {
 .f-info-links a {
   text-decoration: none;
   color: #222222;
+  margin: 0 10px; /* add spacing between Privacy & Terms */
 }
 
 .f-info-links a:hover {
@@ -39,25 +40,25 @@ body {
 .f-info-social,
 .f-info-brand {
   width: 100%;
-  vertical-align: middle;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .f-info-social i {
-  margin-right: 1rem;
+  margin: 0 0.5rem; /* even spacing */
   font-size: 1.2rem;
+  cursor: pointer;
 }
 
 .f-info {
   text-align: center;
-  height: 8rem;
   background-color: #ebebeb;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   justify-content: center;
-  align-items: space-evenly;
+  align-items: center;
+  padding: 1.5rem 0;
 }
 
 /* Card Styles */
@@ -119,4 +120,11 @@ body {
 .show-card {
   padding-left: 0;
   padding-right: 0;
+}
+
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1; /* takes full height minus navbar/footer */
 }

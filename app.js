@@ -1,4 +1,4 @@
-if (process.env.NODE_ENV != "production") {
+if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
@@ -7,7 +7,6 @@ const mongoose = require("mongoose");
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
-const app = express();
 const ExpressError = require("./utils/expressError.js");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
@@ -20,16 +19,17 @@ const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 
-// MongoDB connection
-//const mongoUrl = "mongodb://127.0.0.1:27017/wonderlust";
+const app = express();
+
+// ✅ MongoDB Connection
 const dbUrl = process.env.ATLAS_DB_URL;
 
 mongoose
   .connect(dbUrl)
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.log("DB Connection Error:", err));
+  .then(() => console.log(" Connected to MongoDB"))
+  .catch((err) => console.log(" DB Connection Error:", err));
 
-// App configuration
+// ✅ App Configuration
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -37,16 +37,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
 
+// ✅ Session Store Configuration
 const store = MongoStore.create({
   mongoUrl: dbUrl,
-  crypto: {
-    secret: process.env.SECRET,
-  },
-  touchAfter: 24 * 3600,
+  crypto: { secret: process.env.SECRET },
+  touchAfter: 24 * 3600, // time period in seconds
 });
 
-store.on("error", () => {
-  console.log("ERROR in MONGO SESSION STORE", err);
+store.on("error", (err) => {
+  console.log(" ERROR in MONGO SESSION STORE", err);
 });
 
 const sessionOptions = {
@@ -61,16 +60,13 @@ const sessionOptions = {
   },
 };
 
-// app.get("/", (req, res) => res.send("I am root"));
-
-//session
+// ✅ Middlewares
 app.use(session(sessionOptions));
 app.use(flash());
-
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new LocalStrategy(user.authenticate()));
 
+passport.use(new LocalStrategy(user.authenticate()));
 passport.serializeUser(user.serializeUser());
 passport.deserializeUser(user.deserializeUser());
 
@@ -81,21 +77,28 @@ app.use((req, res, next) => {
   next();
 });
 
-//routes
+// ✅ Routes
 app.use("/listings", listingRouter);
-
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
-// All route handlers here...
 
-// Error handler
+// ✅ Root Route
+app.get("/", (req, res) => {
+  res.render("listings/home.ejs"); // change to your home page if different
+});
+
+// ✅ Error Handler
+app.all("*", (req, res, next) => {
+  next(new ExpressError(404, "Page Not Found"));
+});
+
 app.use((err, req, res, next) => {
-  let { statusCode = 500, message = "Something went wrong" } = err;
-  //res.status(statusCode).send(message);
+  const { statusCode = 500, message = "Something went wrong" } = err;
   res.status(statusCode).render("error.ejs", { message });
 });
 
-// Server start
-app.listen(8080, () => {
-  console.log("Server listening on port 8080");
+// ✅ Server Start (Render Compatible)
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(` Server running on port ${PORT}`);
 });

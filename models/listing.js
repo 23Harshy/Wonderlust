@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const Review = require("./review.js");
+const { string } = require("joi");
 // Define the Listing Schema
 const listingSchema = new Schema({
   title: {
@@ -13,14 +14,8 @@ const listingSchema = new Schema({
     trim: true,
   },
   image: {
-    filename: {
-      type: String,
-      default: "listingimage",
-    },
-    url: {
-      type: String,
-      required: [true, "Image URL is required"],
-    },
+    url: String,
+    filename: String,
   },
   price: {
     type: Number,
@@ -42,6 +37,10 @@ const listingSchema = new Schema({
       ref: "Review",
     },
   ],
+  owner: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 //mongoose middleware

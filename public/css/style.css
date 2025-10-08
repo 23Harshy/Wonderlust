@@ -61,38 +61,52 @@ body {
   padding: 1.5rem 0;
 }
 
-/* Card Styles */
-.listing-card {
-  border: none !important;
-  margin-bottom: 2rem;
-}
-
-.card-img-top {
-  border-radius: 1rem !important;
-  width: 100% !important;
-  object-fit: cover !important;
-}
-
-.card-body {
-  padding: 0 !important;
-}
-
-.card-text p {
-  font-weight: 400 !important;
-}
-
+/* ===========================
+     CARD STYLING
+  ============================ */
 .listing-link {
   text-decoration: none;
+  color: inherit;
 }
 
-/* Card Hover Effect */
-.card-img-overlay {
-  opacity: 0;
+.listing-card {
+  border: none;
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
-.card-img-overlay:hover {
-  opacity: 0.2;
-  background-color: white;
+.listing-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.listing-card img {
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
+
+.listing-card .card-body {
+  background: #fff;
+  padding: 1rem;
+}
+
+.card-text {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-text b {
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.tax-info {
+  color: #888;
+  font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 /* New Listing Page */

@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV != "production") {
+  require("dotenv").config();
+}
+
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
@@ -42,7 +46,7 @@ const sessionOptions = {
   },
 };
 
-app.get("/", (req, res) => res.send("I am root"));
+// app.get("/", (req, res) => res.send("I am root"));
 
 //session
 app.use(session(sessionOptions));

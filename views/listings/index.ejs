@@ -1,22 +1,234 @@
-<% layout("/layouts/boilerplate") %>
-<h1>All Listings</h1>
-<div class="row row-cols-lg-3 row-cols-md-3 row-cols-sm-1 g-3">
+<% layout("/layouts/boilerplate") %> <%#
+======================================================== %> <%# ALL LISTINGS
+PAGE (ENHANCED) %> <%# ========================================================
+%>
+
+<style>
+  /* ===========================
+     FILTER BAR STYLING
+  ============================ */
+  #filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    justify-content: flex-start;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .filter {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    opacity: 0.8;
+    cursor: pointer;
+    border-radius: 1rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .filter i {
+    font-size: 1.3rem;
+    color: #ff5a5f;
+  }
+
+  .filter p {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .filter:hover {
+    background-color: #fff4f4;
+    opacity: 1;
+  }
+
+  .filter.active {
+    background-color: #ff5a5f;
+    color: white;
+    opacity: 1;
+  }
+
+  .filter.active i {
+    color: white;
+  }
+
+  /* ===========================
+     TAX TOGGLE STYLING
+  ============================ */
+  .tax-toggle {
+    border: 1px solid #ccc;
+    border-radius: 1.5rem;
+    height: 3rem;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    background: #f9f9f9;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    margin-left: auto;
+  }
+
+  #tax-info {
+    display: none;
+  }
+
+  /* ===========================
+     RESPONSIVENESS
+  ============================ */
+  @media (max-width: 768px) {
+    #filters {
+      overflow-x: auto;
+      padding: 0.8rem;
+      gap: 1rem;
+    }
+
+    .filter i {
+      font-size: 1.1rem;
+    }
+
+    .tax-toggle {
+      margin-top: 0.8rem;
+      margin-left: 0;
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+
+<!-- ===================== FILTER BAR ===================== -->
+<div id="filters">
+  <div class="filter active" data-category="all">
+    <i class="fa-solid fa-globe"></i>
+    <p>All</p>
+  </div>
+  <div class="filter" data-category="trending">
+    <i class="fa-solid fa-fire"></i>
+    <p>Trending</p>
+  </div>
+  <div class="filter" data-category="rooms">
+    <i class="fa-solid fa-bed"></i>
+    <p>Rooms</p>
+  </div>
+  <div class="filter" data-category="cities">
+    <i class="fa-solid fa-mountain-city"></i>
+    <p>Iconic Cities</p>
+  </div>
+  <div class="filter" data-category="mountains">
+    <i class="fa-solid fa-mountain"></i>
+    <p>Mountains</p>
+  </div>
+  <div class="filter" data-category="castles">
+    <i class="fa-brands fa-fort-awesome"></i>
+    <p>Castles</p>
+  </div>
+  <div class="filter" data-category="pools">
+    <i class="fa-solid fa-person-swimming"></i>
+    <p>Pools</p>
+  </div>
+  <div class="filter" data-category="camping">
+    <i class="fa-solid fa-campground"></i>
+    <p>Camping</p>
+  </div>
+  <div class="filter" data-category="farms">
+    <i class="fa-solid fa-cow"></i>
+    <p>Farms</p>
+  </div>
+  <div class="filter" data-category="arctic">
+    <i class="fa-solid fa-snowman"></i>
+    <p>Arctic</p>
+  </div>
+  <div class="filter" data-category="desert">
+    <i class="fa-solid fa-locust"></i>
+    <p>Desert</p>
+  </div>
+  <div class="filter" data-category="domes">
+    <i class="fa-solid fa-igloo"></i>
+    <p>Domes</p>
+  </div>
+  <div class="filter" data-category="boats">
+    <i class="fa-solid fa-ship"></i>
+    <p>Boats</p>
+  </div>
+
+  <!-- Tax Toggle -->
+  <div class="tax-toggle">
+    <div class="form-check-reverse form-switch">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        role="switch"
+        id="switchCheckChecked"
+      />
+      <label class="form-check-label" for="switchCheckChecked">
+        Display total after taxes
+      </label>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ALL LISTINGS ===================== -->
+<div class="row row-cols-lg-3 row-cols-md-3 row-cols-sm-1 g-3 mt-3">
   <% for (let listing of allListings) { %>
   <a href="/listings/<%= listing._id %>" class="listing-link col">
-    <div class="card h-100 listing-card">
+    <div
+      class="card h-100 listing-card"
+      data-category="<%= listing.category %>"
+    >
       <img
-        src="<%= listing.image?.url || '/images/default.jpg' %>"
+        src="<%= listing.image.url || '/images/default.jpg' %>"
         class="card-img-top img-fluid"
         alt="<%= listing.title %>"
         style="height: 300px; object-fit: cover"
       />
       <div class="card-body">
         <p class="card-text">
-          <b><%= listing.title %></b><br />
-          &#8377; <%= listing.price?.toLocaleString("en-IN") || 0 %> /Night
+          <b><%= listing.title %></b>
+          <span>
+            &#8377; <%= listing.price.toLocaleString("en-IN") %> / Night
+            <i class="tax-info">+18% GST</i>
+          </span>
         </p>
       </div>
     </div>
   </a>
   <% } %>
 </div>
+
+<!-- ===================== SCRIPT ===================== -->
+<script>
+  // Tax Toggle
+  const taxSwitch = document.getElementById("switchCheckChecked");
+  taxSwitch.addEventListener("click", () => {
+    const taxInfo = document.getElementsByClassName("tax-info");
+    for (let info of taxInfo) {
+      info.style.display = info.style.display !== "inline" ? "inline" : "none";
+    }
+  });
+
+  // Filter Click Logic
+  const filters = document.querySelectorAll(".filter");
+  const cards = document.querySelectorAll(".listing-card");
+
+  filters.forEach((filter) => {
+    filter.addEventListener("click", () => {
+      // Remove 'active' class from all filters
+      filters.forEach((f) => f.classList.remove("active"));
+      filter.classList.add("active");
+
+      const category = filter.getAttribute("data-category");
+
+      cards.forEach((card) => {
+        if (
+          category === "all" ||
+          card.getAttribute("data-category") === category
+        ) {
+          card.parentElement.style.display = "block";
+        } else {
+          card.parentElement.style.display = "none";
+        }
+      });
+    });
+  });
+</script>

@@ -15,12 +15,16 @@ main()
   })
   .catch((err) => {
     console.log(err);
-});
+  });
 
-const initDB =  async() => {
-    await listing.deleteMany({});
-    await listing.insertMany(initdata.data);
-    console.log("data was initialized");
+const initDB = async () => {
+  await listing.deleteMany({});
+  initdata.data = initdata.data.map((obj) => ({
+    ...obj,
+    owner: "68dd0d2527d9d6e25e7ea3cf",
+  }));
+  await listing.insertMany(initdata.data);
+  console.log("data was initialized");
 };
 
 initDB();

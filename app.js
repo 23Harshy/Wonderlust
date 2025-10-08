@@ -13,7 +13,7 @@ const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
-const user = require("./models/user.js");
+const User = require("./models/user.js");
 
 const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
@@ -23,11 +23,10 @@ const app = express();
 
 // ✅ MongoDB Connection
 const dbUrl = process.env.ATLAS_DB_URL;
-
 mongoose
   .connect(dbUrl)
-  .then(() => console.log(" Connected to MongoDB"))
-  .catch((err) => console.log(" DB Connection Error:", err));
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch((err) => console.log("❌ DB Connection Error:", err));
 
 // ✅ App Configuration
 app.engine("ejs", ejsMate);
@@ -41,16 +40,13 @@ app.use(express.static(path.join(__dirname, "public")));
 const store = MongoStore.create({
   mongoUrl: dbUrl,
   crypto: { secret: process.env.SECRET },
-  touchAfter: 24 * 3600, // time period in seconds
+  touchAfter: 24 * 3600,
 });
-
-store.on("error", (err) => {
-  console.log(" ERROR in MONGO SESSION STORE", err);
-});
+store.on("error", (err) => console.log("❌ SESSION STORE ERROR", err));
 
 const sessionOptions = {
   store,
-  secret: process.env.SECRET,
+  secret: process.env.SECRET || "defaultsecret",
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -66,9 +62,9 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.use(new LocalStrategy(user.authenticate()));
-passport.serializeUser(user.serializeUser());
-passport.deserializeUser(user.deserializeUser());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
@@ -79,19 +75,20 @@ app.use((req, res, next) => {
 
 // ✅ Routes
 app.use("/listings", listingRouter);
-app.use("/listings/:id/reviews", reviewRouter);
+app.use("/listings/:listingId/reviews", reviewRouter);
 app.use("/", userRouter);
 
 // ✅ Root Route
 app.get("/", (req, res) => {
-  res.render("listings/home.ejs"); // change to your home page if different
+  res.render("listings/home.ejs");
 });
 
-// ✅ Error Handler
+// ✅ 404 Handler
 app.all("*", (req, res, next) => {
   next(new ExpressError(404, "Page Not Found"));
 });
 
+// ✅ Error Handler
 app.use((err, req, res, next) => {
   const { statusCode = 500, message = "Something went wrong" } = err;
   res.status(statusCode).render("error.ejs", { message });
@@ -100,5 +97,5 @@ app.use((err, req, res, next) => {
 // ✅ Server Start (Render Compatible)
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log(` Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });

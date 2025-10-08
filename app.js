@@ -10,6 +10,7 @@ const ejsMate = require("ejs-mate");
 const app = express();
 const ExpressError = require("./utils/expressError.js");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -20,10 +21,11 @@ const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 
 // MongoDB connection
-const mongoUrl = "mongodb://127.0.0.1:27017/wonderlust";
+//const mongoUrl = "mongodb://127.0.0.1:27017/wonderlust";
+const dbUrl = process.env.ATLAS_DB_URL;
 
 mongoose
-  .connect(mongoUrl)
+  .connect(dbUrl)
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.log("DB Connection Error:", err));
 
@@ -35,7 +37,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
 
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  crypto: {
+    secret: "mysupersecretcode",
+  },
+  touchAfter: 24 * 3600,
+});
+
+store.on("error", () => {
+  console.log("ERROR in MONGO SESSION STORE", err);
+});
+
 const sessionOptions = {
+  store,
   secret: "mysupersecretcode",
   resave: false,
   saveUninitialized: true,

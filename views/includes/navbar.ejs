@@ -5,10 +5,11 @@
     border-radius: 25px;
     padding: 0 1rem 0 1rem;
   }
-  .search-btn :hover {
+  .search-btn:hover {
     background-color: #fe424d;
     color: #fff;
   }
+
   .search-btn i {
     display: inline;
     margin-right: 0.5rem;
@@ -52,12 +53,13 @@
 
       <div class="navbar-nav ms-auto">
         <a class="nav-link" href="/listings/new">List a Hidden Gem</a>
-        <% if(!currUser) { %>
+        <% if (typeof currUser === "undefined" || !currUser) { %>
         <a class="nav-link" href="/signup"><b>Sign up</b></a>
         <a class="nav-link" href="/login"><b>Log in</b></a>
-        <%}%> <% if(currUser) { %>
+        <% } else { %>
         <a class="nav-link" href="/logout"><b>Log out</b></a>
-        <%}%>
+        <span class="nav-link"><b>Hi, <%= currUser.username %></b></span>
+        <% } %>
       </div>
     </div>
   </div>

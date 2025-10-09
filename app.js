@@ -87,7 +87,13 @@ app.use((req, res, next) => {
 // ------------------- Routes -------------------
 app.use("/", userRouter);
 app.use("/listings", listingRouter);
-app.use("/listings/:id/reviews", reviewRouter); // make sure mergeParams is true in review router
+app.use("/listings/:id/reviews", reviewRouter); 
+
+
+app.get("/", (req, res) => {
+  res.redirect("/listings");
+  
+});
 
 // ------------------- Error Handling -------------------
 app.use((err, req, res, next) => {
